@@ -1,0 +1,3 @@
+[submodule "src/Rostering"]
+	path = src/Rostering
+	url = git@github.com:ZhiyingChen/Rostering.git
