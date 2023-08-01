@@ -20,6 +20,7 @@ class carType:
 
         self.capable_goods = set()
         self.max_serves = 0
+        self.min_serves = 0
 
         self.cars4serve = dict()
 

@@ -121,8 +121,16 @@ class Input:
             logging.info(
                 "Total serving num {} is equal to or larger than required {}.".format(max_serve_num, self.serve_num))
 
+    def generate_min_serves4cars(self):
+        for p, car_type in self.cars.items():
+            other_max_serves = sum(car.max_serves for c, car in self.cars.items() if c != p)
+            p_min_serves = max(0, self.serve_num - other_max_serves)
+            car_type.min_serves = p_min_serves
+            logging.info("Min serving num for plane type {} is {}".format(p, p_min_serves))
+
     def generate_data(self):
         self.load_data()
         # Finish loading data
         self.generate_max_serves4cars()
         self.check_feasibility()
+        self.generate_min_serves4cars()
