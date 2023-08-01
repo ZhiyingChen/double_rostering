@@ -112,7 +112,17 @@ class Input:
         for p, car_type in self.cars.items():
             car_type.generate_max_serve_num(stTime=self.start_time, edTime=self.end_time)
 
+    def check_feasibility(self):
+        max_serve_num = sum(car_type.max_serves for c_id, car_type in self.cars.items())
+        if max_serve_num < self.serve_num:
+            logging.error("Total serving num {} is smaller than required {}.".format(max_serve_num, self.serve_num))
+            raise BaseException
+        else:
+            logging.info(
+                "Total serving num {} is equal to or larger than required {}.".format(max_serve_num, self.serve_num))
+
     def generate_data(self):
         self.load_data()
         # Finish loading data
         self.generate_max_serves4cars()
+        self.check_feasibility()
