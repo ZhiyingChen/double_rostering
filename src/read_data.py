@@ -133,4 +133,4 @@ class Input:
         # Finish loading data
         self.generate_max_serves4cars()
         self.check_feasibility()
-        self.generate_min_serves4cars()
+        # self.generate_min_serves4cars()

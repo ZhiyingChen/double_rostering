@@ -13,6 +13,9 @@ if __name__ == '__main__':
         input = Input(input_folder=input_folder, output_folder=output_folder)
         input.generate_data()
 
+        ALNSMethod = ALNSEnv(input=input)
+        ALNSMethod.run()
+
         logging.info('Total running time: {}'.format(time() - st))
 
     except BaseException as e:
