@@ -13,8 +13,10 @@ class ALNSEnv:
         self.data_input = input
         self.best_sol = dict()
         self.min_car4best_sol = dict()
+        self.car_dict4best_sol = dict()
+        self.car_act4best_sol = dict()
 
-        self.iterMax = 1000
+        self.iterMax = 100
         self.init_temprature = 100
         self.temperature = self.init_temprature
         self.end_temperature = 10
@@ -188,6 +190,20 @@ class ALNSEnv:
             self.min_car4best_sol[c_id] = car_type.get_car_num4specified_serve(stTime=self.data_input.start_time,
                                                                                edTime=self.data_input.end_time,
                                                                                specified_serve_num=serve_num)
+    def generate_car_dict4best_sol(self):
+        for c_id, serve_num in self.best_sol.items():
+            car_type = self.data_input.cars[c_id]
+            car_dict = car_type.get_car_dict4specified_serve(stTime=self.data_input.start_time,
+                                                   edTime=self.data_input.end_time,
+                                                   specified_serve_num=serve_num)
+            self.car_dict4best_sol[c_id] = car_dict
+
+            car_act_dict = dict()
+            for car_id, car in car_dict.items():
+                schedule = {int(time): 'serve' if 'serve' in action else 'rest' for time, action in
+                            car.schedule.items()}
+                car_act_dict.update({car_id: schedule})
+            self.car_act4best_sol[c_id] = car_act_dict
 
     def run(self):
         init_sol = self.generate_init_sol()
@@ -199,3 +215,4 @@ class ALNSEnv:
             logging.info("Car: {} \t Serve num: {} \t Needed cars: {}".format(c_id, serve_num,  self.min_car4best_sol.get(c_id, 0)))
 
         logging.info("Total needed cars: {}".format(self.calMinCar4curr_sol(self.best_sol)))
+        self.generate_car_dict4best_sol()
