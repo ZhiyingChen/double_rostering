@@ -68,6 +68,15 @@ class carType:
             self.cars4serve[specified_serve_num] = curr_needed_cars
             return curr_needed_cars
 
+    def get_car_dict4specified_serve(self, stTime, edTime, specified_serve_num):
+        currServe = sds.Solver(stTime=stTime, edTime=edTime, serveNum=specified_serve_num,
+                               upload_dur=self.upload_dur, unpack_dur=self.unpack_dur, prepare_dur=self.prepare_dur,
+                               leave_dur=self.leave_dur, return_dur=self.return_dur, serve_dur=self.serve_dur,
+                               rest_dur=self.rest_dur,
+                               full_dur=self.full_dur)
+        currServe.generate_car_schedule()
+        return currServe.car_dict
+
 class goodsType:
     def __init__(self, type, frozen_dur):
 
