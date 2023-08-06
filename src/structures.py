@@ -87,3 +87,10 @@ class goodsType:
 
     def __repr__(self):
         return "goodsType(type={}, frozen_dur={})".format(self.type, self.frozen_dur)
+
+class ALNSSol:
+    def __init__(self):
+        self.best_sol = dict()
+        self.min_car4best_sol = dict()
+        self.car_dict4best_sol = dict()
+        self.car_act4best_sol = dict()
