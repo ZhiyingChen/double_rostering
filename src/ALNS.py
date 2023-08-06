@@ -16,7 +16,7 @@ class ALNSEnv:
         self.car_dict4best_sol = dict()
         self.car_act4best_sol = dict()
 
-        self.iterMax = 100
+        self.iterMax = 1000
         self.init_temprature = 100
         self.temperature = self.init_temprature
         self.end_temperature = 10
@@ -192,6 +192,8 @@ class ALNSEnv:
                                                                                specified_serve_num=serve_num)
     def generate_car_dict4best_sol(self):
         for c_id, serve_num in self.best_sol.items():
+            if serve_num == 0:
+                continue
             car_type = self.data_input.cars[c_id]
             car_dict = car_type.get_car_dict4specified_serve(stTime=self.data_input.start_time,
                                                    edTime=self.data_input.end_time,
