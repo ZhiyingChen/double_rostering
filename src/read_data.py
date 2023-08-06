@@ -14,6 +14,7 @@ class Input:
         self.start_time = None
         self.end_time = None
         self.serve_num = None
+        self.ALNS_solution = None
         logging.info('start reading data from {}'.format(self.input_folder))
 
     def load_params(self):

@@ -207,6 +207,14 @@ class ALNSEnv:
                 car_act_dict.update({car_id: schedule})
             self.car_act4best_sol[c_id] = car_act_dict
 
+    def generate_ALNS_solution(self):
+        ALNS_solution = st.ALNSSol()
+        ALNS_solution.best_sol = self.best_sol
+        ALNS_solution.min_car4best_sol = self.min_car4best_sol
+        ALNS_solution.car_dict4best_sol = self.car_dict4best_sol
+        ALNS_solution.car_act4best_sol = self.car_act4best_sol
+        self.data_input.ALNS_solution = ALNS_solution
+
     def run(self):
         init_sol = self.generate_init_sol()
         self.generate_possible_best_sol(sol=init_sol)
@@ -218,3 +226,4 @@ class ALNSEnv:
 
         logging.info("Total needed cars: {}".format(self.calMinCar4curr_sol(self.best_sol)))
         self.generate_car_dict4best_sol()
+        self.generate_ALNS_solution()
