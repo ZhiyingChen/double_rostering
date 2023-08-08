@@ -1,3 +1,4 @@
+from .Rostering.singleRoster import config as cg
 from . import utils as ul
 from . import structures as st
 from .log_setup import setup_log
@@ -202,7 +203,7 @@ class ALNSEnv:
 
             car_act_dict = dict()
             for car_id, car in car_dict.items():
-                schedule = {int(time): 'serve' if 'serve' in action else 'rest' for time, action in
+                schedule = {int(time): cg.actionName.serve if cg.actionName.serve in action else cg.actionName.rest for time, action in
                             car.schedule.items()}
                 car_act_dict.update({car_id: schedule})
             self.car_act4best_sol[c_id] = car_act_dict
