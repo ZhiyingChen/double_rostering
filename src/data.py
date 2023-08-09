@@ -1,6 +1,7 @@
-from . import utils as ul
-from . import structures as st
-from .log_setup import setup_log
+from src.structures import utils as ul
+from src.structures.cartype import CarType
+from src.structures.goodstype import GoodsType
+from src.structures.log import setup_log
 import pandas as pd
 import logging
 
@@ -18,8 +19,8 @@ class Input:
         logging.info('start reading data from {}'.format(self.input_folder))
 
     def load_params(self):
-        from .utils import paramHeader as ph
-        from .utils import params as p
+        from src.structures.utils import ParamHeader as ph
+        from src.structures.utils import Params as p
 
         param_df = pd.read_csv(self.input_folder + ul.PLAN_FILE,  dtype={ph.paramName: str, ph.paramVal: int})
         param_dict = dict(zip(param_df[ph.paramName], param_df[ph.paramVal]))
@@ -29,7 +30,7 @@ class Input:
         logging.info("Finish loading params.")
 
     def load_car_info(self):
-        from .utils import carInfoHeader as pih
+        from src.structures.utils import CarInfoHeader as pih
 
         car_df = pd.read_csv(self.input_folder + ul.CAR_INFO_FILE, dtype={
             pih.carType: str,
@@ -45,7 +46,7 @@ class Input:
 
         cars = dict()
         for idx, row in car_df.iterrows():
-            car_type = st.carType(
+            car_type = CarType(
                 type=row[pih.carType],
                 total_num=row[pih.carNum],
                 upload_dur=row[pih.packDur],
@@ -62,14 +63,14 @@ class Input:
         return cars
 
     def load_goods_info(self):
-        from .utils import goodsInfoHeader as gih
+        from src.structures.utils import GoodsInfoHeader as gih
 
         goods_df = pd.read_csv(self.input_folder + ul.GOODS_INFO_FILE,
                                dtype={gih.goodsType: str, gih.frozenDur: int})
 
         goods = dict()
         for idx, row in goods_df.iterrows():
-            goods_type = st.goodsType(
+            goods_type = GoodsType(
                 type=row[gih.goodsType],
                 frozen_dur=row[gih.frozenDur]
             )
@@ -79,7 +80,7 @@ class Input:
         return goods
 
     def load_car_goods_relation(self):
-        from .utils import carGoodsRelatHeader as pgh
+        from src.structures.utils import CarGoodsRelatHeader as pgh
 
         car_goods_relation_df = pd.read_csv(self.input_folder + ul.CAR_GOODS_RELATION_FILE,
                                               dtype={pgh.carType: str, pgh.goodsType: str})

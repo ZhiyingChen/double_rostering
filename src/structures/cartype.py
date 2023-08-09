@@ -1,8 +1,8 @@
-from .Rostering.singleRoster import data_structure as sds
+from src.Rostering.singleRoster.solver import Solver
 import math
 import logging
 
-class carType:
+class CarType:
     def __init__(self, type, total_num,
                  upload_dur, leave_dur, serve_dur, return_dur, unpack_dur, rest_dur, full_dur):
 
@@ -28,7 +28,7 @@ class carType:
 
     def generate_max_serve_num(self, stTime, edTime):
 
-        oneServe = sds.Solver(stTime=stTime, edTime=edTime, serveNum=1,
+        oneServe = Solver(stTime=stTime, edTime=edTime, serveNum=1,
                  upload_dur=self.upload_dur, unpack_dur=self.unpack_dur,
                  prepare_dur=self.prepare_dur, leave_dur=self.leave_dur,
                  return_dur=self.return_dur, serve_dur=self.serve_dur, rest_dur=self.rest_dur,
@@ -42,7 +42,7 @@ class carType:
         serve_num = min_serves
         while curr_needed_cars <= self.total_num:
             k = serve_num + 1
-            currServe = sds.Solver(stTime=stTime, edTime=edTime, serveNum=k,
+            currServe = Solver(stTime=stTime, edTime=edTime, serveNum=k,
                  upload_dur=self.upload_dur, unpack_dur=self.unpack_dur,  prepare_dur=self.prepare_dur,
                 leave_dur=self.leave_dur, return_dur=self.return_dur, serve_dur=self.serve_dur, rest_dur=self.rest_dur,
                     full_dur=self.full_dur)
@@ -58,7 +58,7 @@ class carType:
         if specified_serve_num in self.cars4serve:
             return self.cars4serve[specified_serve_num]
         else:
-            currServe = sds.Solver(stTime=stTime, edTime=edTime, serveNum=specified_serve_num,
+            currServe = Solver(stTime=stTime, edTime=edTime, serveNum=specified_serve_num,
                                    upload_dur=self.upload_dur, unpack_dur=self.unpack_dur, prepare_dur=self.prepare_dur,
                                    leave_dur=self.leave_dur, return_dur=self.return_dur, serve_dur=self.serve_dur,
                                    rest_dur=self.rest_dur,
@@ -68,28 +68,10 @@ class carType:
             return curr_needed_cars
 
     def get_car_dict4specified_serve(self, stTime, edTime, specified_serve_num):
-        currServe = sds.Solver(stTime=stTime, edTime=edTime, serveNum=specified_serve_num,
+        currServe = Solver(stTime=stTime, edTime=edTime, serveNum=specified_serve_num,
                                upload_dur=self.upload_dur, unpack_dur=self.unpack_dur, prepare_dur=self.prepare_dur,
                                leave_dur=self.leave_dur, return_dur=self.return_dur, serve_dur=self.serve_dur,
                                rest_dur=self.rest_dur,
                                full_dur=self.full_dur)
         currServe.generate_car_schedule()
         return currServe.car_dict
-
-class goodsType:
-    def __init__(self, type, frozen_dur):
-
-        self.type = type
-        self.frozen_dur = frozen_dur
-
-        self.capable_cars = set()
-
-    def __repr__(self):
-        return "goodsType(type={}, frozen_dur={})".format(self.type, self.frozen_dur)
-
-class ALNSSol:
-    def __init__(self):
-        self.best_sol = dict()
-        self.min_car4best_sol = dict()
-        self.car_dict4best_sol = dict()
-        self.car_act4best_sol = dict()
