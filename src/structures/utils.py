@@ -3,7 +3,7 @@ GOODS_INFO_FILE = '/货物信息.csv'
 PLAN_FILE = '/参数表.csv'
 CAR_GOODS_RELATION_FILE = '/飞机货物匹配关系.csv'
 
-class carInfoHeader:
+class CarInfoHeader:
     carType = '飞机类型'
     carNum = '飞机数量'
     packDur = '装货时间'
@@ -14,20 +14,20 @@ class carInfoHeader:
     restDur = '维修时间'
     maxWorkDur = '最大工作时间'
 
-class goodsInfoHeader:
+class GoodsInfoHeader:
     goodsType = '货物类型'
     frozenDur = '冷冻时长'
 
-class paramHeader:
+class ParamHeader:
     paramName = '参数名称'
     paramVal = '参数值'
 
 
-class params:
+class Params:
     stTime = '计划开始时刻'
     edTime = '计划结束时刻'
     serveNum = '同时服务数量'
 
-class carGoodsRelatHeader:
+class CarGoodsRelatHeader:
     carType = '飞机类型'
     goodsType = '货物类型'
