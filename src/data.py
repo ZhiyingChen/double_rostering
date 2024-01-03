@@ -9,6 +9,7 @@ class Input:
     def __init__(self, input_folder, output_folder):
         setup_log(output_folder, section_name=input_folder)
         self.input_folder = input_folder
+        self.output_folder = output_folder
         self.cars = dict()
         self.start_time = None
         self.end_time = None

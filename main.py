@@ -1,5 +1,6 @@
 from src.data import Input
 from src.alns import ALNSEnv
+from src.dump import Dump
 from time import time
 import logging
 
@@ -15,6 +16,9 @@ if __name__ == '__main__':
 
         ALNSMethod = ALNSEnv(input=input)
         ALNSMethod.run()
+
+        dumper = Dump(data=input)
+        dumper.generate_output_df()
 
         logging.info('Total running time: {}'.format(time() - st))
 

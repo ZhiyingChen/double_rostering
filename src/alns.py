@@ -215,3 +215,4 @@ class ALNSEnv:
 
         logging.info("Total needed cars: {}".format(self.calMinCar4curr_sol(self.best_sol)))
         self.generate_car_dict4best_sol()
+        self.data_input.ALNS_solution = self.car_dict4best_sol
