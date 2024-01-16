@@ -1,10 +1,10 @@
-CAR_INFO_FILE = '/飞机信息.csv'
+CAR_INFO_FILE = '/汽车信息.csv'
 PLAN_FILE = '/参数表.csv'
 
 
 class CarInfoHeader:
-    carType = '飞机类型'
-    carNum = '飞机数量'
+    carType = '汽车类型'
+    carNum = '汽车数量'
     packDur = '装货时间'
     unpackDur = '卸货时间'
     goDur = '去程时间'
