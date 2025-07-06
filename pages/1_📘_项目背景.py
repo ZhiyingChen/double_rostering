@@ -2,9 +2,9 @@ import streamlit as st
 from src.Rostering.web import function
 
 # 页面设置
-st.set_page_config(page_title="多类型汽车轮转与维修调度 - 项目文档", layout="wide")
+st.set_page_config(page_title="多类型汽车轮转与维修调度", layout="wide")
 
-st.title("📦 多类型 汽车轮转与维修调度优化系统 - 项目文档")
+st.title("📦 多类型 汽车轮转与维修调度优化系统")
 
 # 项目背景介绍
 st.header("🧩 项目背景简介")
