@@ -1,3 +1,17 @@
+---
+title: Multiple Rostering App
+emoji: 🚀
+colorFrom: red
+colorTo: red
+sdk: docker
+tags:
+- streamlit
+pinned: false
+short_description: multiple-rostering-app
+license: mit
+---
+
+
 # Rostering
 
 **Problem Description**
