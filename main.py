@@ -1,3 +1,5 @@
+import sys
+
 from src.data import Input
 from src.alns import ALNSEnv
 from src.dump import Dump
@@ -9,7 +11,10 @@ if __name__ == '__main__':
     try:
         st = time()
         input_folder = 'input'
-        output_folder = './output/'
+        if 'win' in sys.platform:
+            output_folder = './output/'
+        else:
+            output_folder = '/tmp/'
 
         input_data = Input(
             input_folder=input_folder, output_folder=output_folder
