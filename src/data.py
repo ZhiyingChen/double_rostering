@@ -56,6 +56,8 @@ class Input:
 
         cars = dict()
         for idx, row in car_df.iterrows():
+            if row[pih.carNum] < 1:
+                continue
             car_type = CarType(
                 type=row[pih.carType],
                 total_num=row[pih.carNum],

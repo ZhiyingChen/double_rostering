@@ -36,7 +36,7 @@ class CarType:
         car4one = oneServe.generate_min_car_num()
         self.cars4serve[1] = car4one
 
-        min_serves = math.ceil(self.total_num / car4one)
+        min_serves = math.floor(self.total_num / car4one)
 
         curr_needed_cars = 0
         serve_num = min_serves
@@ -46,13 +46,14 @@ class CarType:
                  upload_dur=self.upload_dur, unpack_dur=self.unpack_dur,  prepare_dur=self.prepare_dur,
                 leave_dur=self.leave_dur, return_dur=self.return_dur, serve_dur=self.serve_dur, rest_dur=self.rest_dur,
                     full_dur=self.full_dur)
-            curr_needed_cars = currServe.generate_min_car_num()
-            self.cars4serve[k] = curr_needed_cars
-            if curr_needed_cars <= self.total_num:
+            needed_cars = currServe.generate_min_car_num()
+            self.cars4serve[k] = needed_cars
+            if curr_needed_cars + needed_cars <= self.total_num:
                 serve_num += 1
+            curr_needed_cars += needed_cars
 
         self.max_serves = serve_num
-        logging.info("Max serving num for plane type {} is {}".format(self.type, self.max_serves))
+        logging.info("Max serving num for car type {} is {}".format(self.type, self.max_serves))
 
     def get_car_num4specified_serve(self, stTime, edTime, specified_serve_num):
         if specified_serve_num in self.cars4serve:
