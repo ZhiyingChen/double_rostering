@@ -6,10 +6,18 @@ import logging
 
 
 class Input:
-    def __init__(self, input_folder, output_folder):
+    def __init__(
+            self,
+            input_folder,
+            output_folder,
+            load_from_file=True,
+            config_df=None
+    ):
         setup_log(output_folder, section_name=input_folder)
         self.input_folder = input_folder
         self.output_folder = output_folder
+        self.load_from_file = load_from_file
+        self.config_df = config_df
         self.cars = dict()
         self.start_time = None
         self.end_time = None
@@ -21,7 +29,10 @@ class Input:
         from src.structures.utils import ParamHeader as ph
         from src.structures.utils import Params as p
 
-        param_df = pd.read_csv(self.input_folder + ul.PLAN_FILE, dtype={ph.paramName: str, ph.paramVal: int})
+        if self.load_from_file:
+            param_df = pd.read_csv(self.input_folder + ul.PLAN_FILE, dtype={ph.paramName: str, ph.paramVal: int})
+        else:
+            param_df = self.config_df
         param_dict = dict(zip(param_df[ph.paramName], param_df[ph.paramVal]))
         self.start_time = param_dict[p.stTime]
         self.end_time = param_dict[p.edTime]

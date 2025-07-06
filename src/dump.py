@@ -58,4 +58,6 @@ class Dump:
 
         out_df = pd.DataFrame(record_dict, dtype=object)
         out_df = out_df.loc[self.data.start_time:self.data.end_time]
-        out_df.to_csv('{}/result.csv'.format(self.data.output_folder))
+        if self.data.load_from_file:
+            out_df.to_csv('{}/result.csv'.format(self.data.output_folder))
+        return out_df
