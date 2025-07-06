@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import time
+import sys
 from src.Rostering.web import function
 from src import gantt
 from src.data import Input
@@ -112,7 +113,10 @@ if st.button("🚀 运行算法"):
             st_time = time.time()
 
             input_folder = 'input'
-            output_folder = 'output'
+            if 'win' in sys.platform:
+                output_folder = './output/'
+            else:
+                output_folder = '/tmp/'
 
             input_data = Input(
                 input_folder=input_folder, output_folder=output_folder
