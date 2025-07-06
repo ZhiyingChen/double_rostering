@@ -149,7 +149,7 @@ class ALNSEnv:
                 destroyed_sol, delete_num, destroyOperator = self.selectAndUseDestroyOperator(curr_sol)
                 new_sol, repairOperator = self.selectAndUseRepairOperator(destroyed_sol, delete_num)
 
-                if self.calMinCar4curr_sol(new_sol) <= self.calMinCar4curr_sol(curr_sol):
+                if self.calMinCar4curr_sol(new_sol) < self.calMinCar4curr_sol(curr_sol):
                     curr_sol = new_sol
                     if self.calMinCar4curr_sol(curr_sol) <= self.calMinCar4curr_sol(self.best_sol):
                         self.best_sol = deepcopy(curr_sol)
