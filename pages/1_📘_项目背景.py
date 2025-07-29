@@ -1,54 +1,37 @@
 import streamlit as st
-from src.Rostering.web import function
+from src.Rostering.web import function as rostering_function
+from web import function
 
-# 页面设置
-st.set_page_config(page_title="多类型汽车轮转与维修调度", layout="wide")
 
-st.title("📦 多类型 汽车轮转与维修调度优化系统")
+function.render_language_selector()
+lang, T = function.get_language_dict("doc")
+
+st.title(T["page_title"])
 
 # 项目背景介绍
-st.header("🧩 项目背景简介")
-st.markdown("""
-在大型园区、后勤保障单位或国防工业中，常配备多类型作业车辆以执行不同等级的运输与服务任务。这些车辆需按时轮转执行任务，同时满足维修、安全、工时等现实约束。
+st.header(T["project_background_header"])
+st.markdown(T["project_background_text"])
 
-本项目基于实际后勤运维需求，构建了一个多类型车、有限维修周期、小时级任务需求的最小车辆数优化模型。通过将经典的“菱形错峰轮转算法”封装为子模块，并引入启发式的“大自然领域搜索（ALNS）”策略，成功提升模型泛化能力与求解效率。
-""")
-
-st.subheader("📋 问题描述")
+st.subheader(T["problem_description_subheader"])
 # 插入问题描述图片
+st.image("src/Rostering/image/Question.png", caption=T["problem_description_image_caption"], width=800)
+st.markdown(T["problem_description_details"])
 
-st.markdown("""
-  车站有A种类型的车，每种类型的车数量为Bi ,i=1,2...A；
-    每种车到目的地执行任务的流程分为：装货，去往目的地，在目的地执行任务，返回车站，卸货。
-    每项工作所需时间见约束条件。
-    核心业务需求是在轮转好车执行任务的班次，用最少的车，满足任务要求。
-""")
-st.image("src/Rostering/image/Question.png", caption="问题描述图", width=800)
-st.markdown("""  
-    ####  约束条件：
+st.markdown(T["constraints_header"])
+st.markdown(T["constraint_1"])
+st.markdown(T["constraint_2"])
+st.markdown(T["constraint_3"])
+st.markdown(T["constraint_4"])
+st.markdown(T["constraint_5"])
+st.markdown(T["constraint_6"])
+st.markdown(T["constraint_7"])
+st.markdown(T["constraint_8"])
+st.markdown(T["constraint_9"])
 
-    - 目的地要求同时有P（P为整数）辆车同时执行任务。
-    
-    - 每种车装货时间ni,  i=1...A
-    
-    - 每种车去往目的地时间ri,  i=1...A
-    
-    - 每种车执行任务的时间si,   i=1...A
-    
-    - 每种车返回目的地时间r’i,  i=1...A
-    
-    - 每种车的卸货时间mi，i=1...A
-    
-    - 每种车的最大连续运转周期Ui,  i=1...A；指车（ri+si+r’i）*累计出动架次 >=Ui时，需要维修保障
-    
-    - 每种车维修保障时长Di，i=1...A
-    
-    - 目的地执行任务的总时间跨度T
-    
-    #### 🎯 目标：
-    - 制定轮转排班方案，用最少的车满足每小时任务需求，并符合车辆维修、出勤等约束
-""")
+st.markdown(T["objective_header"])
+st.markdown(T["objective"])
 
-function.render_footer()
+rostering_function.render_footer()
+
 
 

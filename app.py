@@ -2,20 +2,20 @@ import streamlit as st
 from src.Rostering.web import function
 
 if __name__ == '__main__':
+    # 渲染语言栏
+    function.render_language_selector()
+    lang, T = function.get_language_dict("app")
+
     st.set_page_config(
-        page_title="多类型车辆轮转算法平台",
+        page_title=T["page_title"],
         page_icon="📦",
         layout="wide"
     )
 
-    st.title("📦 多类型车辆轮转算法平台")
-    st.markdown("欢迎使用！请通过左侧导航栏选择功能页面：")
+    st.title(T["page_title"])
+    st.markdown(T["welcome_message"])
 
-    st.markdown("""
-        ### 📘 页面导航说明：
-        - **项目背景**：了解问题背景
-        - **执行算法**：了解输入输出文件格式，编辑输入文件，运行算法并查看结果
-        """)
+    st.markdown(T["navigation_guide"])
 
     function.render_footer()
 

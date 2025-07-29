@@ -2,76 +2,40 @@ import streamlit as st
 import pandas as pd
 import time
 import sys
-from src.Rostering.web import function
+from src.Rostering.web import function as rostering_function
 from src import gantt
 from src.data import Input
 from src.alns import ALNSEnv
 from src.dump import Dump
+from web import function
 
+# 渲染语言栏
+function.render_language_selector()
+lang, T = function.get_language_dict("algo")
 
-st.title("⚙️ 多车型 汽车轮转与维修调度算法")
-
-st.markdown(
-    """
-    请在“执行算法”页面将示例输入文件改成你需要的数据。
-    """
-)
+st.title(T["page_title"])
+st.markdown(T["description"])
 
 # 输入接口文档
-# 输入接口文档
-st.header("📥 输入接口文档")
+st.header(T["input_interface_header"])
 
-with st.expander("📥 输入文件说明：全局参数.csv"):
-    df_global_params = pd.DataFrame([
-        ["参数名称", "str", "各类参数的名称"],
-        ["参数值", "double", "参数值"]
-    ], columns=["字段名称", "类型", "描述"])
+with st.expander(T["global_params_expander"]):
+    df_global_params = pd.DataFrame(T["global_params_table"], columns=T["global_field"])
     st.table(df_global_params)
 
-    st.markdown("""
-        **参数枚举说明：**
-        以下是各个参数的定义和含义：
+    st.markdown(T["global_params_description"])
 
-        - **计划开始时间**：小时，整数，例如 0
-        - **计划结束时间**：小时，整数，例如 720
-        - **同时服务数量**： 整数，例如 2
-    
-    """)
-
-with st.expander("📥 输入文件说明：汽车信息.csv"):
-    df_car_info = pd.DataFrame([
-        ["汽车类型", "str", "汽车的类型名称，如 A，B，C"],
-        ["汽车数量", "int", "汽车的最多使用的个数"],
-        ["装货时间", "int", "该类型汽车装货需要的小时数"],
-        ["卸货时间", "int", "该类型汽车卸货需要的小时数"],
-        ["去程时间", "int", "该类型汽车去程需要的小时数"],
-        ["返程时间", "int", "该类型汽车返程需要的小时数"],
-        ["服务时间", "int", "该类型汽车可服务的小时数"],
-        ["维修时间", "int", "该类型汽车维修需要的小时数"],
-        ["最大工作时间", "int", "该类型汽车最多可服务的小时数，工作满了这个时间就要维修"]
-    ], columns=["字段名称", "类型", "描述"])
+with st.expander(T["car_info_expander"]):
+    df_car_info = pd.DataFrame(T["car_info_table"], columns=T["global_field"])
     st.table(df_car_info)
 
-
-st.header("📥 输出接口文档")
-with st.expander("📥 输出文件说明：车辆和执行结果.csv"):
-    st.markdown(
-        """
-        每一行代表时间（小时），每一列代表每辆车，内容值含义如下
-        - 装货： 0
-        - 出发： 1
-        - 服务： 2
-        - 返回： 3
-        - 卸货： 4
-        - 备货： 5
-        - 维修： 6
-        - 空闲： 7
-        """
-    )
+st.header(T["output_interface_header"])
+with st.expander(T["vehicle_result_expander"]):
+    st.markdown(T["vehicle_result_details"])
 
 st.markdown("---")
 # 示例数据展示
-st.header("📄 示例输入数据（可编辑）")
+st.header(T["example_data_header"])
 
 
 @st.cache_data
@@ -84,31 +48,29 @@ global_df = load_csv("input/参数表.csv")
 car_df = load_csv("input/汽车信息.csv")
 
 # 可编辑的 DataFrame
-with st.expander("📝 编辑全局参数"):
+with st.expander(T["edit_global_params"]):
     edited_global_df = st.data_editor(global_df, num_rows="dynamic")
     # 下载按钮
     st.download_button(
-        label="📥 下载编辑后的 全局参数.csv",
+        label=T["download_global_params"],
         data=edited_global_df.to_csv(index=False).encode('utf-8'),
         file_name="全局参数.csv",
         mime="text/csv"
     )
 
-with st.expander("📝 编辑汽车信息"):
-    edited_car_df = st.data_editor(
-        car_df, num_rows="dynamic"
-    )
+with st.expander(T["edit_car_info"]):
+    edited_car_df = st.data_editor(car_df, num_rows="dynamic")
     # 下载按钮
     st.download_button(
-        label="📥 下载编辑后的 汽车信息.csv",
+        label=T["download_car_info"],
         data=edited_car_df.to_csv(index=False).encode('utf-8'),
         file_name="汽车信息.csv",
         mime="text/csv"
     )
 
 # 显示运行按钮
-if st.button("🚀 运行算法"):
-    with st.spinner("算法运行中，请稍候..."):
+if st.button(T["run_algorithm"]):
+    with st.spinner(T["running_algorithm"]):
         try:
             st_time = time.time()
 
@@ -128,22 +90,22 @@ if st.button("🚀 运行算法"):
 
             dumper = Dump(data=input_data)
             result_df = dumper.generate_output_df()
-            st.success("✅ 算法运行完成！耗时{}秒".format(round(time.time() - st_time)))
+            st.success(T["algorithm_success"].format(round(time.time() - st_time)))
         except Exception as e:
-            st.error(f"❌ 算法运行出错：{e}")
+            st.error(T["algorithm_error"].format(e))
 
         st.markdown("---")
-        st.header("📊 输出结果: 至少需要{}辆车".format(len(result_df.columns)))
+        st.header(T["output_results"].format(len(result_df.columns)))
 
-        with st.expander("📄 车辆和执行结果"):
+        with st.expander(T["vehicle_execution_results"]):
             st.dataframe(result_df)
             st.download_button(
-                label=f"📥 下载 车辆和执行结果.csv",
+                label=T["download_vehicle_results"],
                 data=result_df.to_csv(index=False),
                 file_name="车辆和执行结果.csv",
                 mime="text/csv"
             )
-        with st.spinner("正在绘制甘特图..."):
+        with st.spinner(T["drawing_gantt_chart"]):
             gantt.plot_gantt_bar(result_df)
 
-function.render_footer()
+rostering_function.render_footer()
