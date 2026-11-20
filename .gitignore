@@ -6,5 +6,10 @@ dist
 *.spec
 *.html
 result.csv
+.venv/
+.pytest_cache/
+*.log
+desktop-check.png
+mobile-check.png
 
 

@@ -1,0 +1,23 @@
+[Unit]
+Description=Double Rostering Multi-Type Optimization App
+After=network.target
+
+[Service]
+Type=simple
+User=double-rostering
+Group=double-rostering
+WorkingDirectory=/opt/double_rostering_app
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONUTF8=1
+ExecStart=/opt/double_rostering_app/.venv/bin/uvicorn api.main:app --host 127.0.0.1 --port 8093 --workers 1
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=768M
+TasksMax=32
+
+[Install]
+WantedBy=multi-user.target

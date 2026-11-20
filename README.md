@@ -1,88 +1,28 @@
----
-title: Multiple Rostering App
-emoji: 🚀
-colorFrom: red
-colorTo: red
-sdk: docker
-tags:
-- streamlit
-pinned: false
-short_description: multiple-rostering-app
-license: mit
----
+# Double Rostering Lab
 
+多车型车辆轮转优化应用。系统使用两层真实算法：外层 ALNS 在车型之间分配同时服务需求，内层复用 `src/Rostering/singleRoster` 为每种车型生成车辆任务与维修轮转。
 
-# Rostering
+## 本地运行
 
-**Problem Description**
+```powershell
+git submodule update --init --recursive
+python -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements-api.txt
+.\.venv\Scripts\python -m uvicorn api.main:app --reload --port 8093
+```
 
-车站有A种类型的车，每种类型的车数量为Bi ,i=1,2...A；
+打开 `http://127.0.0.1:8093/`，API 文档为 `/docs`。
 
-每种车到目的地执行任务的流程分为：装货，去往目的地，在目的地执行任务，返回车站，卸货。
+## 输入
 
-每项工作所需时间见约束条件。
+- 全局参数：计划开始、计划结束、同时服务数量。
+- 车型参数：车型名称、可用数量、装卸时间、往返时间、服务时间、维修时间、最大工作时间。
+- 示例数据来自 `input/参数表.csv` 和 `input/汽车信息.csv`。
 
-核心业务需求是在轮转好车执行任务的班次，用最少的车，满足任务要求。
+每次 API 求解都在独立临时目录中运行，不共享可变模型对象，也不会覆盖项目输入或输出。单实例限制为一个并发求解，超时为 25 秒。
 
-    约束条件：
-    
-    目的地要求同时有P（P为整数）辆车同时执行任务。
-    
-    每种车装货时间ni,  i=1...A
-    
-    每种车去往目的地时间ri,  i=1...A
-    
-    每种车执行任务的时间si,   i=1...A
-    
-    每种车返回目的地时间r’i,  i=1...A
-    
-    每种车的卸货时间mi，i=1...A
-    
-    每种车的最大连续运转周期Ui,  i=1...A；指车（ri+si+r’i）*累计出动架次 >=Ui时，需要维修保障
-    
-    每种车维修保障时长Di，i=1...A
-    
-    目的地执行任务的总时间跨度T
-    
-    优化目标：
-    
-    汽车数量最少
+## 输出
 
+API 返回总用车数、车型服务分配、车型启用数量、覆盖率、服务和维修工时、车辆任务矩阵及可导出的任务片段。
 
-**Environment Deployment**
-
- Install Python Executor (version >= 3.7.0), Anaconda IDE is recommended
-
-
-The required packages are listed in requirements.txt. you can install them using:
-
-    pip install -r requirements.txt
- 
- **Run**
-
-To run project:
-
-    1. put your input data in input folder, you can adjust parameters.
-    2. execute python main.py, and result.csv will be generated in output folder.
-
-**Result Explanation**
-
-    装货： 0
-    
-    出发： 1
-    
-    服务： 2
-    
-    返回： 3
-    
-    卸货： 4
-    
-    备货： 5
-    
-    维修： 6
-    
-    空闲： 7
-
-
-
-
+原有 Streamlit 页面保留兼容；公开入口使用 `frontend/` 与 `api/`。
