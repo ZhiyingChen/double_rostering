@@ -1,9 +1,81 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Double Rostering · 多车型轮转优化</title><link rel="stylesheet" href="style.css"></head><body>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Double Rostering · 多车型轮转优化</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23175cd3'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Arial' font-size='23' font-weight='700' fill='white'%3EDR%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="problem.css">
+</head>
+<body>
 <header><a href="#problem"><b>DR</b> Double Rostering Lab</a><span id="status">正在连接求解服务</span></header>
-<main><section class="hero" id="problem"><small>ALNS · 多车型联合排班</small><h1>不同车型能力不同，<br>怎样组合车队最省车？</h1><p>车站拥有多种车型，每种车型的库存、装卸、往返、服务、维修和最大连续工时都不同。服务区每小时必须同时有指定数量的车辆在岗。我们需要同时决定：每种车型承担多少服务需求，以及每辆实体车如何轮转，才能用最少车辆保持服务。</p><div><a href="#simulation">开始多车型模拟</a><button id="exampleTop">加载示例</button></div></section>
-<section class="cards"><article><b>第一层</b><h2>车型服务分配</h2><p>ALNS 在多种车型之间分配同时服务需求，寻找更少的总用车数。</p></article><article><b>第二层</b><h2>单车型轮转</h2><p>对每种车型独立生成装货、去程、服务、返程、卸货、空闲和维修计划。</p></article><article><b>联合目标</b><h2>最小车队规模</h2><p>在库存和维护约束下覆盖需求，并展示车型利用率与具体任务时序。</p></article></section>
-<section class="model"><div><small>真实算法</small><h2>ALNS 外层搜索 + 轮转内层求解</h2></div><p>外层使用自适应大邻域搜索调整车型组合；每次评估都会调用项目原有 singleRoster 模型计算该车型真正需要的车辆数。结果不是静态演示。</p></section>
-<section class="simulation" id="simulation"><div class="heading"><div><small>交互模拟</small><h2>配置多车型运营场景</h2></div><em>无需 API Key · 同源求解</em></div><div class="workspace">
-<aside><section class="panel"><div class="title"><h3>全局需求</h3><button id="example">恢复示例</button></div><div id="params" class="params"></div></section><section class="panel"><div class="title"><h3>车型数据</h3><button id="addType">添加车型</button></div><div id="types"></div><button class="solve" id="solve">运行双层排班优化</button><div id="error"></div></section></aside>
-<div class="results"><section class="panel"><div class="title"><h3>优化结果</h3><span id="meta">等待运行</span></div><div id="kpis" class="kpis"><p class="empty">运行后展示车队规模、覆盖和工时指标。</p></div><div id="warnings"></div><div id="allocation"></div></section><section class="panel"><div class="title"><h3>车型与车辆轮转</h3><div><button id="vehicleView" class="active">车辆矩阵</button><button id="coverageView">覆盖曲线</button></div></div><div id="legend" class="legend"></div><div id="visual" class="visual"><p class="empty">暂无排班结果</p></div></section><section class="panel"><div class="title"><h3>任务明细</h3><div><input id="search" placeholder="搜索车型、车辆或活动"><button id="download">导出 CSV</button></div></div><div id="table" class="table"><p class="empty">暂无明细</p></div></section></div>
-</div></section></main><footer>Double Rostering Lab · <a id="docs" href="docs">API 文档</a></footer><script src="app.js"></script></body></html>
+<main>
+  <section class="hero" id="problem">
+    <small>车辆轮转问题 · 真实示例</small>
+    <h1>怎样让不同车型持续接力，<br>用更少的车守住服务需求？</h1>
+    <p>运营方需要在整个计划时域内维持指定数量的车辆同时服务。每种车型的库存和任务耗时不同，每辆车还要完成装卸、往返，并在累计工作达到上限后维修。模型同时决定车型分工与每辆车的逐小时轮转。</p>
+    <div><a href="#simulation">配置并运行模型</a><button id="exampleTop">加载示例</button></div>
+  </section>
+
+  <section class="problem-visual" aria-labelledby="visual-title">
+    <div class="section-heading"><small>业务场景</small><h2 id="visual-title">车辆不是直接“出现在服务区”，而是在完整任务链中循环</h2><p>装货、路途、卸货和维修都会占用车辆。人工逐小时安排时，一次车型分工变化就会联动数百个时点和多辆车的后续任务。</p></div>
+    <div class="flow-diagram" aria-label="车辆轮转优化从输入到输出的流程图">
+      <article class="flow-node input-node"><span>01 · 输入</span><strong>车型与运营规则</strong><small>库存、各环节时长、最大工作时间</small></article>
+      <i class="flow-arrow" aria-hidden="true">→</i>
+      <article class="flow-node demand-node"><span>02 · 需求</span><strong><em data-example="concurrent">—</em> 辆持续服务</strong><small><em data-example="start">—</em>h 至 <em data-example="end">—</em>h</small></article>
+      <i class="flow-arrow" aria-hidden="true">→</i>
+      <article class="flow-node solver-node"><span>03 · 双层模型</span><strong>分车型，再排车辆</strong><small>ALNS 搜索 + 单车型轮转</small></article>
+      <i class="flow-arrow" aria-hidden="true">→</i>
+      <article class="flow-node output-node"><span>04 · 输出</span><strong>逐车逐小时任务表</strong><small>启用车辆、覆盖、工时与任务片段</small></article>
+    </div>
+    <div class="cycle" aria-label="一辆车的任务周期">
+      <span>装货</span><i>›</i><span>去程</span><i>›</i><span class="active">服务</span><i>›</i><span>返程</span><i>›</i><span>卸货</span><i>›</i><span class="maintenance">达到上限后维修</span><i class="loop">↺</i>
+    </div>
+  </section>
+
+  <section class="scenario" aria-labelledby="scenario-title">
+    <div class="section-heading"><small>当前示例</small><h2 id="scenario-title">这次模型实际要排多大规模？</h2><p>以下数字由当前加载的示例数据实时计算，不代表模型的固定上限。</p></div>
+    <div class="scenario-metrics" id="scenarioMetrics"><p class="empty">正在读取示例规模…</p></div>
+  </section>
+
+  <section class="io-grid" aria-label="模型的输入决策与输出">
+    <article><b>已知输入</b><h2>运营方提供什么</h2><ul><li>计划开始与结束时刻</li><li>全时域同时服务车辆数</li><li>每类车型的可用车辆数</li><li>装货、去程、服务、返程、卸货时长</li><li>维修时长与最大累计工作时间</li></ul></article>
+    <article class="decision"><b>模型决策</b><h2>需要安排什么</h2><ul><li>每种车型承担几辆同时服务需求</li><li>每种车型实际启用多少辆车</li><li>每辆实体车何时执行各任务环节</li><li>何时维修，何时空闲等待下一轮</li></ul></article>
+    <article><b>优化输出</b><h2>最终得到什么</h2><ul><li>车型服务分配与启用 / 可用数量</li><li>车辆 × 小时的八状态轮转矩阵</li><li>逐时服务覆盖与启动阶段缺口</li><li>服务、工作、维修工时和工时差</li><li>可筛选、可导出的任务明细 CSV</li></ul></article>
+  </section>
+
+  <section class="rules" aria-labelledby="rules-title">
+    <div class="section-heading"><small>必须满足的规则</small><h2 id="rules-title">一张可执行轮转表，至少要同时处理这些约束</h2></div>
+    <div class="rule-grid">
+      <article><span>01</span><h3>服务分工守恒</h3><p>分配给各车型的同时服务数量之和，必须等于全局需求。</p></article>
+      <article><span>02</span><h3>车型库存上限</h3><p>每类车型生成的实体车数量不能超过该车型的可用库存。</p></article>
+      <article><span>03</span><h3>固定任务顺序</h3><p>每趟任务严格经过装货、去程、服务、返程和卸货，且占用输入规定的小时数。</p></article>
+      <article><span>04</span><h3>持续服务节拍</h3><p>车辆按服务时长与需求数量形成发车间隔，轮流进入服务阶段。</p></article>
+      <article><span>05</span><h3>累计工作上限</h3><p>单车可连续承担的完整任务轮数受“最大工作时间”限制。</p></article>
+      <article><span>06</span><h3>维修占用时间</h3><p>达到工作上限后，车辆必须留出规定维修时长，期间不能参与任务。</p></article>
+    </div>
+    <p class="coverage-note"><strong>覆盖口径：</strong>轮转从计划开始时刻发车，因此首批车辆完成装货和去程前属于启动阶段；结果会如实显示这段服务缺口，之后检查持续覆盖，而不是把它隐藏为“已满足”。</p>
+  </section>
+
+  <section class="objective" aria-labelledby="objective-title">
+    <div><small>优化目标</small><h2 id="objective-title">唯一目标：启用车辆总数最少</h2><p>外层 ALNS 改变各车型承担的服务数量；每个候选分工都交给内层轮转模型，计算真实所需车辆数。模型比较的是车辆数量，不包含采购成本、油耗、员工偏好或公平性权重。</p></div>
+    <div class="formula"><span>最小化</span><strong>Σ 各车型所需车辆数</strong><small>前提：车型分工满足服务需求，且不突破各车型库存</small></div>
+  </section>
+
+  <section class="question"><span>模型实际回答的问题</span><h2>在给定车型库存和全部任务时长规则下，各车型应承担多少同时服务需求、每辆车应如何轮转，才能用最少的实体车辆形成可执行计划？</h2></section>
+
+  <section class="model"><div><small>为什么不靠人工逐条安排</small><h2>车型分工与车辆时序必须一起算</h2></div><p>看似只需安排 <em data-example="concurrent">—</em> 辆车同时服务，但每一辆服务车背后还需要车辆完成前后环节或维修。改变一项车型分配，会重新决定该车型的发车节拍、轮换车辆数和整段时域的状态。双层算法用 100 轮 ALNS 搜索车型组合，并用真实轮转结果评价每个组合。</p></section>
+
+  <section class="simulation" id="simulation">
+    <div class="heading"><div><small>交互模拟</small><h2>配置多车型运营场景</h2></div><em>无需 API Key · 同源求解</em></div>
+    <div class="workspace">
+      <aside><section class="panel"><div class="title"><h3>全局需求</h3><button id="example">恢复示例</button></div><div id="params" class="params"></div></section><section class="panel"><div class="title"><h3>车型数据</h3><button id="addType">添加车型</button></div><div id="types"></div><button class="solve" id="solve">运行双层排班优化</button><div id="error"></div></section></aside>
+      <div class="results"><section class="panel"><div class="title"><h3>优化结果</h3><span id="meta">等待运行</span></div><div id="kpis" class="kpis"><p class="empty">运行后展示车队规模、覆盖和工时指标。</p></div><div id="warnings"></div><div id="allocation"></div></section><section class="panel"><div class="title"><h3>车型与车辆轮转</h3><div><button id="vehicleView" class="active">车辆矩阵</button><button id="coverageView">覆盖曲线</button></div></div><div id="legend" class="legend"></div><div id="visual" class="visual"><p class="empty">暂无排班结果</p></div></section><section class="panel"><div class="title"><h3>任务明细</h3><div><input id="search" placeholder="搜索车型、车辆或活动"><button id="download">导出 CSV</button></div></div><div id="table" class="table"><p class="empty">暂无明细</p></div></section></div>
+    </div>
+  </section>
+</main>
+<footer>Double Rostering Lab · <a id="docs" href="docs">API 文档</a></footer>
+<script src="app.js"></script>
+</body>
+</html>
