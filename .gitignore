@@ -5,6 +5,7 @@ build
 dist
 *.spec
 *.html
+!frontend/index.html
 result.csv
 .venv/
 .pytest_cache/
