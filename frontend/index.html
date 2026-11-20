@@ -20,18 +20,45 @@
 
   <section class="problem-visual" aria-labelledby="visual-title">
     <div class="section-heading"><small>业务场景</small><h2 id="visual-title">车辆不是直接“出现在服务区”，而是在完整任务链中循环</h2><p>装货、路途、卸货和维修都会占用车辆。人工逐小时安排时，一次车型分工变化就会联动数百个时点和多辆车的后续任务。</p></div>
-    <div class="flow-diagram" aria-label="车辆轮转优化从输入到输出的流程图">
-      <article class="flow-node input-node"><span>01 · 输入</span><strong>车型与运营规则</strong><small>库存、各环节时长、最大工作时间</small></article>
-      <i class="flow-arrow" aria-hidden="true">→</i>
-      <article class="flow-node demand-node"><span>02 · 需求</span><strong><em data-example="concurrent">—</em> 辆持续服务</strong><small><em data-example="start">—</em>h 至 <em data-example="end">—</em>h</small></article>
-      <i class="flow-arrow" aria-hidden="true">→</i>
-      <article class="flow-node solver-node"><span>03 · 双层模型</span><strong>分车型，再排车辆</strong><small>ALNS 搜索 + 单车型轮转</small></article>
-      <i class="flow-arrow" aria-hidden="true">→</i>
-      <article class="flow-node output-node"><span>04 · 输出</span><strong>逐车逐小时任务表</strong><small>启用车辆、覆盖、工时与任务片段</small></article>
+    <div class="rostering-diagram" aria-label="多车型车辆轮转与持续服务图示">
+      <div class="fleet-side">
+        <div class="diagram-label"><span>01</span><div><b>多车型车队</b><small>库存与任务耗时不同</small></div></div>
+        <article class="fleet-card type-a"><div class="truck-icon" aria-hidden="true"><svg viewBox="0 0 64 36"><path d="M5 7h34v21H5zM39 14h11l9 8v6H39z"/><circle cx="17" cy="29" r="5"/><circle cx="49" cy="29" r="5"/></svg></div><div><strong>A 型 · <em data-fleet="A">6</em> 辆</strong><small><i></i>单趟任务 <em data-cycle="A">20</em>h</small></div></article>
+        <article class="fleet-card type-b"><div class="truck-icon" aria-hidden="true"><svg viewBox="0 0 64 36"><path d="M5 7h34v21H5zM39 14h11l9 8v6H39z"/><circle cx="17" cy="29" r="5"/><circle cx="49" cy="29" r="5"/></svg></div><div><strong>B 型 · <em data-fleet="B">6</em> 辆</strong><small><i></i>单趟任务 <em data-cycle="B">21</em>h</small></div></article>
+        <p>外层模型先决定每种车型承担多少服务需求。</p>
+      </div>
+      <div class="diagram-connector" aria-hidden="true"><span></span><i>分配</i></div>
+      <div class="mission-side">
+        <div class="diagram-label"><span>02</span><div><b>一辆车的完整任务</b><small>所有环节都占用车辆</small></div></div>
+        <div class="mission-loop">
+          <svg viewBox="0 0 330 260" role="img" aria-label="装货、去程、服务、返程、卸货和维修循环">
+            <defs><marker id="arrowhead" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0 7 3.5 0 7z"/></marker></defs>
+            <path class="loop-path" d="M72 53C151 3 261 45 274 121c13 78-74 133-161 104C41 201 24 112 72 53Z" marker-end="url(#arrowhead)"/>
+            <g class="stage load"><circle cx="72" cy="53" r="28"/><text x="72" y="58">装货</text></g>
+            <g class="stage outbound"><circle cx="184" cy="35" r="28"/><text x="184" y="40">去程</text></g>
+            <g class="stage service"><circle cx="275" cy="118" r="34"/><text x="275" y="123">服务</text></g>
+            <g class="stage inbound"><circle cx="214" cy="218" r="28"/><text x="214" y="223">返程</text></g>
+            <g class="stage unload"><circle cx="91" cy="210" r="28"/><text x="91" y="215">卸货</text></g>
+            <g class="maintenance-node"><rect x="104" y="91" width="108" height="66" rx="16"/><text x="158" y="116">累计工作到上限</text><text x="158" y="139">维修 20h</text></g>
+          </svg>
+        </div>
+        <p>内层模型为每辆实体车安排逐小时状态。</p>
+      </div>
+      <div class="diagram-connector" aria-hidden="true"><span></span><i>错峰</i></div>
+      <div class="coverage-side">
+        <div class="diagram-label"><span>03</span><div><b>车辆错峰接力</b><small><em data-example="concurrent">—</em> 辆始终同时服务</small></div></div>
+        <div class="mini-roster" aria-label="多辆车辆错峰任务矩阵示意">
+          <div class="roster-axis"><span>0h</span><span>时间 →</span><span><em data-example="end">—</em>h</span></div>
+          <div class="roster-row"><b>A-1</b><span class="load"></span><span class="road"></span><span class="serve wide"></span><span class="road"></span><span class="idle"></span></div>
+          <div class="roster-row"><b>A-2</b><span class="idle short"></span><span class="load"></span><span class="road"></span><span class="serve wide"></span><span class="road"></span></div>
+          <div class="roster-row"><b>B-1</b><span class="idle"></span><span class="load"></span><span class="road"></span><span class="serve wide"></span></div>
+          <div class="roster-row"><b>B-2</b><span class="serve"></span><span class="road"></span><span class="fix"></span><span class="idle"></span></div>
+        </div>
+        <div class="coverage-band"><span></span><strong><em data-example="concurrent">—</em> 辆服务覆盖</strong></div>
+        <p>输出可执行的车辆 × 小时轮转表与覆盖情况。</p>
+      </div>
     </div>
-    <div class="cycle" aria-label="一辆车的任务周期">
-      <span>装货</span><i>›</i><span>去程</span><i>›</i><span class="active">服务</span><i>›</i><span>返程</span><i>›</i><span>卸货</span><i>›</i><span class="maintenance">达到上限后维修</span><i class="loop">↺</i>
-    </div>
+    <div class="diagram-legend"><span><i class="load"></i>装卸</span><span><i class="road"></i>往返</span><span><i class="serve"></i>服务</span><span><i class="fix"></i>维修</span><span><i class="idle"></i>空闲</span><small>图中 A/B 库存、任务时长、服务需求与时域均来自当前示例</small></div>
   </section>
 
   <section class="scenario" aria-labelledby="scenario-title">
