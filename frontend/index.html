@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Double Rostering · 多车型轮转优化</title>
+  <title>Multi-Type Vehicle Rostering · 多车型车辆轮转优化</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23175cd3'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Arial' font-size='23' font-weight='700' fill='white'%3EDR%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="problem.css">
+  <link rel="stylesheet" href="results.css">
 </head>
 <body>
-<header><a href="#problem"><b>DR</b> Double Rostering Lab</a><span id="status">正在连接求解服务</span></header>
+<header><a href="#problem"><b>MV</b> Multi-Type Vehicle Rostering</a><span id="status">正在连接求解服务</span></header>
 <main>
   <section class="hero" id="problem">
     <small>车辆轮转问题 · 真实示例</small>
@@ -98,11 +99,15 @@
     <div class="heading"><div><small>交互模拟</small><h2>配置多车型运营场景</h2></div><em>无需 API Key · 同源求解</em></div>
     <div class="workspace">
       <aside><section class="panel"><div class="title"><h3>全局需求</h3><button id="example">恢复示例</button></div><div id="params" class="params"></div></section><section class="panel"><div class="title"><h3>车型数据</h3><button id="addType">添加车型</button></div><div id="types"></div><button class="solve" id="solve">运行双层排班优化</button><div id="error"></div></section></aside>
-      <div class="results"><section class="panel"><div class="title"><h3>优化结果</h3><span id="meta">等待运行</span></div><div id="kpis" class="kpis"><p class="empty">运行后展示车队规模、覆盖和工时指标。</p></div><div id="warnings"></div><div id="allocation"></div></section><section class="panel"><div class="title"><h3>车型与车辆轮转</h3><div><button id="vehicleView" class="active">车辆矩阵</button><button id="coverageView">覆盖曲线</button></div></div><div id="legend" class="legend"></div><div id="visual" class="visual"><p class="empty">暂无排班结果</p></div></section><section class="panel"><div class="title"><h3>任务明细</h3><div><input id="search" placeholder="搜索车型、车辆或活动"><button id="download">导出 CSV</button></div></div><div id="table" class="table"><p class="empty">暂无明细</p></div></section></div>
+      <div class="results">
+        <section class="panel"><div class="title"><h3>优化结果</h3><span id="meta">等待运行</span></div><div id="kpis" class="kpis"><p class="empty">运行后展示车队规模、覆盖和工时指标。</p></div><div id="warnings"></div><div id="allocation"></div></section>
+        <section class="panel roster-panel"><div class="title"><div><h3>车型与车辆轮转</h3><small>默认完整显示全部 720 小时，也可放大查看局部任务</small></div><div><button id="vehicleView" class="active">车辆甘特图</button><button id="coverageView">覆盖曲线</button></div></div><div id="legend" class="legend"></div><div id="timelineControls" class="timeline-controls" hidden><div><button data-window="all" class="active">完整时域</button><button data-window="72">72 小时</button><button data-window="24">24 小时</button></div><label><span id="rangeLabel">0–720h</span><input id="timelineRange" type="range" min="0" max="0" value="0"></label></div><div id="visual" class="visual"><p class="empty">暂无排班结果</p></div></section>
+        <section class="panel detail-panel"><div class="detail-heading"><div><h3>任务明细</h3><p id="tableMeta">运行后可按车辆或活动查询任务片段</p></div><div class="detail-actions"><input id="search" placeholder="搜索车型、车辆或活动"><select id="activityFilter"><option value="">全部活动</option></select><button id="download">导出全部 CSV</button></div></div><div id="table" class="table"><p class="empty">暂无明细</p></div><div id="pagination" class="pagination" hidden><button id="prevPage">上一页</button><span id="pageMeta"></span><button id="nextPage">下一页</button></div></section>
+      </div>
     </div>
   </section>
 </main>
-<footer>Double Rostering Lab · <a id="docs" href="docs">API 文档</a></footer>
+<footer>Multi-Type Vehicle Rostering · <a id="docs" href="docs">API 文档</a></footer>
 <script src="app.js"></script>
 </body>
 </html>
